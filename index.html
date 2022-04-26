@@ -1,0 +1,329 @@
+<html>
+<head>
+    <link rel="stylesheet" href="site.css" type="text/css"/>
+    <style type="text/css">
+        table, p {
+            font-size: 110%;
+        }
+        #lexicon {
+            line-height: 180%;
+        }
+    </style>
+    <script type="text/javascript">
+
+        lines = [];
+        inr = false;
+        line_idx = -1;
+        chr_idx = 1;
+
+        function begin_typing() {
+
+            // preload content into our objects
+            let spans = document.getElementById("flux").getElementsByTagName("span");
+
+            for (let i = 0; i < spans.length; i++) {
+                lines.push(
+                    { id: spans[i].id, c: String(spans[i].classList), t:document.getElementById(spans[i].id).innerText});
+            }
+
+            new_line();
+        }
+
+        function new_line() {
+
+            line_idx++;
+            chr_idx = 0;
+
+            if (line_idx > lines.length) {
+                return;
+            }
+            var span = document.getElementById(lines[line_idx].id);
+            let text = lines[line_idx].t;
+            handedness = "";
+            speed = "";
+
+            // what style of typing?
+            classes = lines[line_idx].c.split(",");
+            for (let c = 0; c < classes.length; c++) {
+                switch (classes[c]) {
+                    case "fl_both":
+                    case "fl_left":
+                    case "fl_right":
+                        handedness = classes[c].substring(3,classes[c].length);
+                        break;
+                    case "fl_slow":
+                    case "fl_moderate":
+                    case "fl_quick":
+                    case "fl_sync":
+                    case "fl_offsync":
+                        speed = classes[c].substring(3,classes[c].length);
+                        break;
+                    case "fl_left_faster":
+                        speed = "lfaster";
+                        break;
+                    case "fl_right_faster":
+                        speed = "rfaster";
+                        break;
+                }
+            }
+
+            type_key(span, text, handedness, speed);
+        }
+
+        function get_next_keystroke(speed, handedness) {
+            next = 0;
+            switch (speed) {
+                case "slow":
+                    next = Math.floor(Math.random() * 300) + 300;
+                    break;
+                case "moderate":
+                case "sync":
+                    next = Math.floor(Math.random() * 100) + 100;
+                    break;
+                case "quick":
+                case "lfaster":
+                case "rfaster":
+                    next = Math.floor(Math.random() * 50) + 50;
+                    break;
+                case "offsync":
+                    next = Math.floor(Math.random() * 250) + 50;
+                    break;
+            }
+            if (handedness == "both") {
+                next = next / 1.5;
+            }
+            return next;
+        }
+
+        lefthand = true;
+
+        function type_key(span, text, handedness, speed) {
+            chr_idx++;
+
+            if (chr_idx > text.length) {
+                new_line();
+                return;
+            }
+
+            span.innerHTML = "<span class='typed'>" + text.substr(0, chr_idx) + "</span>" + text.substr(chr_idx, text.length);
+
+            if (speed == "sync") {
+                if (!mute) {
+                    (new Audio("key_left.mp3",30,false)).play();
+                    (new Audio("key_right.mp3",30,false)).play();
+                }
+            } else {
+
+                var mp3 = "key_left.mp3";
+
+                if (handedness == "both")
+                {
+                    lefthand = !lefthand;
+
+                    if (handedness == "lfaster")
+                    {
+                        lefthand = true; 
+                    }
+                    if (handedness == "rfaster")
+                    {
+                        lefthand = false;
+                    }
+
+                    if (!lefthand) {
+                        mp3 = "key_right.mp3";
+                    }
+                }
+                if (handedness == "right") {
+                    mp3 = "key_right.mp3";
+                }
+                if (!mute)
+                    (new Audio(mp3,30,false)).play();
+            }
+
+            setTimeout(() => {type_key(span,text,handedness,speed);}, get_next_keystroke(speed, handedness));
+        }
+
+        // check if element is in view
+        function inView(element) {
+
+            var elementHeight = element.clientHeight;
+
+            // get window height
+            var windowHeight = window.innerHeight;
+            // get number of pixels that the document is scrolled
+            var scrollY = window.scrollY || window.pageYOffset;
+
+            // get current scroll position (distance from the top of the page to the bottom of the current viewport)
+            var scrollPosition = scrollY + windowHeight;
+            // get element position (distance from the top of the page to the bottom of the element)
+            var elementPosition = element.getBoundingClientRect().top + scrollY + elementHeight;
+
+            // is scroll position greater than element position? (is element in view?)
+            if (scrollPosition > elementPosition) {
+                return true;
+            }
+
+            return false;
+        }
+
+        // animate element when it is in view
+        function activate() {
+            // check for 99 bottles animation
+            if (inView(document.getElementById("flux"))) {
+                if (!inr) { // if not already running
+                    inr = true;
+                    begin_typing();
+                }
+            } else {
+                // stop any running animation
+            }
+        }
+
+        var mute = false;
+        function setMute() {
+            mute = !mute;
+            var m = document.getElementById("mute_btn");
+            if (mute) {
+                m.innerText = "UNMUTE";
+            }
+            else {
+                m.innerText = "MUTE";
+            }
+        }
+
+        // listen for scroll event and call animate function
+        document.addEventListener('scroll', activate);
+        document.addEventListener("load", activate);
+    </script>
+</head>
+<body>
+    <section class="banner">
+        <!-- <img src="NCIS_7.gif" style="height:150px; opacity: 50%;"/> -->
+        <h1>pas de deux</h1>
+<h3>Two Coders, One Keyboard</h3>
+
+<!-- <div id="nics_div"></div> -->
+    </section>
+    <section class="fluxus">
+        <div id="flux">
+            <span id="fl_title" class="fl_both,fl_moderate">A PAS DE DEUX FOR THE KEYBOARD</span><br/><br/>
+            <span id="fl_left" class="fl_left,fl_moderate">Left performer types while second doesn't</span>
+            <ul>
+                <li><span id="fl_left_quickly" class="fl_left,fl_quick">quickly</span></li>
+                <li><span id="fl_left_mod" class="fl_left,fl_moderate">moderately</span></li>
+                <li><span id="fl_left_slowly" class="fl_left,fl_slow">slowly</span></li>
+            </ul>
+            <span id="fl_right" class="fl_right,fl_moderate">Right performer types while first doesn't</span>
+            <ul>
+                <li><span id="fl_right_quickly" class="fl_right,fl_quick">quickly</span></li>
+                <li><span id="fl_right_mod" class="fl_right,fl_moderate">moderately</span></li>
+                <li><span id="fl_right_slowly" class="fl_right,fl_slow">slowly</span></li>
+            </ul>
+            <span id="fl_together" class="fl_both,fl_moderate">Both type together</span>
+            <ul>
+                <li><span id="fl_both_sync" class="fl_both,fl_sync">in sync</span></li>
+                <li><span id="fl_both_offsync" class="fl_both,fl_offsync">out of sync</span></li>
+                <li><span id="fl_both_lfast" class="fl_both,fl_left_faster">with the left faster</span></li>
+                <li><span id="fl_both_rfast" class="fl_both,fl_right_faster">with the right faster</span></li>
+            </ul>
+            Winter, 2021
+        </div>
+        <div style="position: absolute;top:85%;padding-left: 10px;"><a href="javascript:setMute();" id="mute_btn">MUTE</a></div>
+    </section>
+    <section class="banner" id="lexicon">
+        <!-- <h3>For when you're a keyboard short or <a href="https://www.youtube.com/watch?v=u8qgehH3kEQ">you've been hacked</a>.</h3><br/> -->
+        <div>
+            <p>Pas de deux is a coding language / environment for two programmers sharing a single keyboard. It it pair programming at its finest.</p>
+            <h3>Instructions</h3>
+            <p>The left typist types the left text, the right, the right, on a single, shared keyboard. Their speed and coordination determines commands. Their respective texts are pre-set and may each use the entire keyboard.</p>
+            <h3>Lexicon</h3>
+            <table>
+                <tr>
+                    <td>Left keyboardist types quickly<br/>
+                        <span class="andthen">while</span><br/>
+                        Right keyboardist types slowly<br/>
+                    </td><td></td>
+                </tr>
+                <tr>
+                    <td>Right keyboardist types quickly<br/>
+                        <span class="andthen">while</span><br/>
+                        Left keyboardist types slowly<br/>
+                    </td><td></td>
+                </tr>
+
+
+                <tr>
+                    <td>Left keyboardist types quickly (right is silent)<br/>
+                        <span class="andthen">then</span><br/>
+                        Right keyboardist types slowly (left is silent)<br/>
+                    </td><td></td>
+                </tr>
+                <tr>
+                    <td>Right keyboardist types quickly (left is silent)<br/>
+                        <span class="andthen">then</span><br/>
+                        Left keyboardist types slowly (right is silent)<br/>
+                    </td><td></td>
+                </tr>
+                <tr>
+                    <td>Left keyboardist types slowly<br/>
+                        <span class="andthen">then</span><br/>
+                        Right keyboardist types quickly<br/>
+                    </td><td></td>
+                </tr>
+                <tr>
+                    <td>Left keyboardist types moderately<br/>
+                        <span class="andthen">then</span><br/>
+                        Right keyboardist types moderately
+                    </td><td>If top item is positive, begin loop, otherwise skip to end of loop</td>
+                </tr>
+                <tr>
+                    <td>Right keyboardist types moderately<br/>
+                        <span class="andthen">then</span><br/>
+                        Left keyboardist types moderately
+                    </td><td>End of Loop</td>
+                </tr>
+                <tr>
+                    <td>Left keyboardist types slowly</td><td>PUSH 0</td>
+                </tr>
+                <tr>
+                    <td>Right keyboardist types quickly</td><td>INC</td>
+                </tr>
+                <tr>
+                    <td>Right keyboardist types moderately</td><td>ADD</td>
+                </tr>
+                <tr>
+                    <td>Right keyboardist types slowly</td><td>DEC</td>
+                </tr>
+                <tr>
+                    <td>Both type in sync, quickly</td><td>Undo last command</td>
+                </tr>
+                <tr>
+                    <td>Both type in sync, slowly</td><td></td>
+                </tr>
+                <tr>
+                    <td>Both type, in similar speed, out of sync</td>
+                </tr>
+                <tr>
+                    <td>Both type, left types faster</td><td></td>
+                </tr>
+                <tr>
+                    <td>Both type, right types faster</td><td></td>
+                </tr>
+                <tr>
+                    <td>One key held down for a while</td><td></td>
+                </tr>
+                <tr>
+                    <td>Both keyboardists hold down one key for a while</td><td></td>
+                </tr>
+            </table>
+
+            <h3>Can it be performed by one person?</h3>
+            <p>Some rare people are inhabited by two typists.</p>
+            <h3>Can we hook up two keyboards to one computer?</h3>
+            <p>That is called Easy Mode.</p>
+            <h3>Does this have any useful purpose?</h3>
+            <p>Yes, if you are <a href="https://www.youtube.com/watch?v=u8qgehH3kEQ">getting hacked</a>.</p>
+        </div>
+    </section>
+</body>
+</html>

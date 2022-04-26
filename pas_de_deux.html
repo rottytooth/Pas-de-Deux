@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="site.css" type="text/css"/>
+        <style type="text/css">
+            body {
+                background-color: #fff;
+                color: #333;
+                overflow-y: hidden;
+            }
+        </style>
+        <script src="pas_de_deux.js"></script>        
+        <script typs="text/javascript">
+
+            // load text from .txt file on server into the "txt" obects and screen
+            const loadText = function(txt_obj, url) {
+                var client = new XMLHttpRequest();
+                client.open('GET', url);
+                client.onreadystatechange = function() {
+                    txt_obj.text = client.responseText;
+                    document.getElementById(txt_obj.div).innerText = txt_obj.text;
+                }
+                client.send();
+            }
+            
+            function stopKeyProp(e) {
+                if (e.keyCode === 8) { // 8 = backspace
+                    e.preventDefault();
+                }
+            }
+
+            function logKey(e) {
+                testText(e, left_txt);
+                testText(e, right_txt);
+                e.preventDefault();
+            }
+
+            window.onload = function(e) {
+                loadText(left_txt, "text1.txt");
+                loadText(right_txt, "text2.txt");
+                
+                document.addEventListener('keypress', logKey);
+                document.addEventListener('keydown', stopKeyProp)
+
+                webglstuff();
+            };
+
+            function webglstuff() {
+                var canvas = document.querySelector("#c");
+                
+            }
+        </script>
+    </head>
+    <body>
+        <div id="code_section">
+            <div class="preset_text_container">
+                <div id="preset_lheader" class="preset_header">Left text</div>
+                <div class="presetblocktop">
+                    <div id="preset_lblock"></div>
+                    <div id="preset_text1"></div>
+                </div>
+            </div>
+            <div class="preset_text_container">
+                <div id="preset_rheader" class="preset_header">Right text</div>
+                <div class="presetblocktop">
+                    <div id="preset_rblock"></div>
+                    <div id="preset_text2"></div>
+                </div>
+            </div>
+            <div id="program">
+                <div id="inter">
+                    <span id="curr_inter"></span>
+                    <div class="rate"><span class="curr_label">Left:</span><span id="left_count" class="count">0.00</span>lps </div>
+                    <div class="rate"><span class="curr_label">Right:</span><span id="right_count" class="count">0.00</span>lps </div>
+                </div>
+            </div>
+        </div>
+        <div id="output_section"><canvas id="c"></canvas></div>
+        <!-- For debugging: -->
+        <!-- <div id="log_container">
+            <div id="log1" class="log"></div>
+            <div id="log2" class="log"></div>
+        </div> -->
+    </body>
+</html>
+

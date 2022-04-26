@@ -1,0 +1,195 @@
+html,body {
+    font-family: 'Ubuntu Mono', 'Courier New', Courier, monospace;
+    padding: 0;
+    margin: 0;
+    font-size: 14pt;
+    width: 100%;
+    /* background-color: #aaffcc; */
+    /* background-color: #aaffcc; */
+}
+div {
+    padding-bottom: 10px;
+}
+
+/*
+    entry page
+*/
+.banner {
+    text-align: center;
+    padding-top: 30px; 
+    padding-bottom: 30px;
+    /* background-color: #000099; */
+    color: #200;
+    min-height: 140px;
+    font-family: 'Ubuntu Mono', 'Courier New', Courier, monospace;
+}
+#nics_div {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.fluxus {
+    background-color: black;
+    color: #75fb4c;
+    padding-top: 30px; padding-bottom: 30px;
+    font-family: 'Ubuntu Mono', 'Courier New', Courier, monospace;
+    text-align: center;
+    width: 100%;
+}
+.fluxus div {
+    text-align: left;
+    display: inline-block;
+    /* for ie6/7: */
+    *display: inline;
+    zoom: 1;
+}
+#lexicon {
+    width: 100%;
+    text-align: center;
+}
+#lexicon div {
+    text-align: left;
+    display: inline-block;
+    left: auto; 
+    right: auto;
+    width: 85%;
+    max-width: 1200px;
+}
+table, th, td {
+    border: #200 1px solid;
+    padding: 10px;
+}
+table {
+    border-collapse: collapse;
+}
+td {
+    line-height: 180%;
+    vertical-align: top;
+}
+.andthen {
+    padding-left: 40px;
+}
+
+#mute_btn, #mutebtn:hover, #mutebtn:visited {
+    color: #53b635;
+}
+.button.stop {
+    width: 28px;
+    height: 28px;
+    border-style: solid;
+    box-sizing: border-box;
+    border-width: 15px 0px 15px 35px;
+    border-color: transparent transparent transparent #202020;
+}
+#button_outline {
+    padding: 8px;
+    cursor: pointer;
+    border: #fff;
+    background-color: #fff;
+    opacity: 0.3;
+    border-radius: 10px;
+}
+
+/*
+    IDE page
+*/
+#code_section {
+    width:49%;
+    position:relative;
+}
+#output_section {
+    width:49%;
+    position:relative;
+}
+.preset_text_container {
+    height: 43vh;
+    overflow-y: hidden;
+    margin-left: 5px;
+}
+.presetblocktop {
+    padding-right: 20px;
+    padding-left: 20px;
+    padding-bottom: 0;
+    padding-top: 10px;
+    border-left: #200 1px solid;
+    border-right: #200 1px solid;
+    margin: 0;
+}
+#preset_lblock {
+    position: absolute;
+    left: 236px;
+    width: calc(100% - 236px);
+    border-top:  #200 1px solid;
+    padding: 0;
+    margin: 0;
+    margin-top: -11px;
+}
+#preset_rblock {
+    position: absolute;
+    right: 231px;
+    left: 5px;
+    width: calc(100% - 236px);
+    border-top:  #200 1px solid;
+    padding: 0;
+    margin: 0;
+    margin-top: -11px;
+}
+.preset_header {
+    background-color: #200;
+    color: #fff;
+    font-family: 'Ubuntu Mono', 'Courier New', Courier, monospace;
+    margin-top: 10px;
+    border-top: #200 1px solid;
+    border-left: #200 1px solid;
+    border-right: #200 1px solid;
+    width: 200px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-bottom: #200 2px solid;
+    margin-bottom: -1px;
+}
+#preset_rheader {
+    margin-left: auto;                
+    padding-left: 20px;
+}
+#preset_lheader {
+    padding-left: 20px;
+}
+.presetblocktop {
+    background-color: #200;
+    color: #75fb4c;
+}
+.typed {
+    /* background-color: #999;
+    color: #000; */
+    color: #200;
+    background-color: #75fb4c;
+}
+.log {
+    width: 20%;
+    padding-right: 9%;
+    overflow-y: scroll;
+    height: 400px;
+    display: inline-block;
+}
+#program {
+    width: 30%;
+    display: inline-block;
+}
+.curr_label {
+    width: 300px;
+}
+.rate {
+    display: inline-block;
+    width: 300px;
+}
+.count {
+    background-color: #200;
+    color: #fff;
+    padding: 3px;
+}
+#inter {
+    padding-top: 30px;
+}
