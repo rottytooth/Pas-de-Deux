@@ -31,7 +31,7 @@ TIMEOUT = 10000; // how long we look at recent typings
 //     var seconds = ((millis % 60000) / 1000).toFixed(0);
 //     return minutes + ":" + (seconds < 10 ? '0' : '') + seconds + ':' + (millis % 1000);
 // }
-Letter = function(txt, timestamp, value) {
+const Letter = function(txt, timestamp, value) {
     this.txt = txt;
 
     this.timestamp = timestamp; // just for tracking
@@ -49,14 +49,14 @@ Letter.prototype.remove = function(that) {
     that.txt.scope_index.splice(i, 1);
     updateCount(this);
 }
-function updateCount(f) {
+const updateCount = (f) => {
     document.getElementById(f.txt.count_loc).innerText = ((f.txt.scope_index.length) / 10.0).toFixed(1);
 }
 
 /*
 Test if letter is relevant to this text and register letter if so
 */
-function testText(e, txt) {
+const testText = (e, txt) => {
     if (e.key == txt.text[txt.idx]) {
         txt.idx++;
 

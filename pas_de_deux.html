@@ -12,7 +12,7 @@
         <script src="pas_de_deux.js"></script>        
         <script typs="text/javascript">
 
-            // load text from .txt file on server into the "txt" obects and screen
+            // load text from .txt file on server into the "txt" objects and screen
             const loadText = function(txt_obj, url) {
                 var client = new XMLHttpRequest();
                 client.open('GET', url);
@@ -57,14 +57,14 @@
                 <div id="preset_lheader" class="preset_header">Left text</div>
                 <div class="presetblocktop">
                     <div id="preset_lblock"></div>
-                    <div id="preset_text1"></div>
+                    <div id="preset_text1" class="preset_text"></div>
                 </div>
             </div>
             <div class="preset_text_container">
                 <div id="preset_rheader" class="preset_header">Right text</div>
                 <div class="presetblocktop">
                     <div id="preset_rblock"></div>
-                    <div id="preset_text2"></div>
+                    <div id="preset_text2" class="preset_text"></div>
                 </div>
             </div>
             <div id="program">
