@@ -9,15 +9,23 @@
                 overflow-y: hidden;
             }
         </style>
-        <script src="pas_de_deux.js"></script>        
-        <script typs="text/javascript">
+        <script src="src/soundGenerators.js"></script>        
+        <script src="src/pas_de_deux.js"></script>        
+        <script type="text/javascript">
 
             // load text from .txt file on server into the "txt" objects and screen
             const loadText = function(txt_obj, url) {
                 var client = new XMLHttpRequest();
                 client.open('GET', url);
                 client.onreadystatechange = function() {
-                    txt_obj.text = client.responseText;
+                    let wordlist = client.responseText.split("\n");
+                    let typing_string = "";
+                    for (let i = 0; i < 200; i++) {
+                        if (i > 0) 
+                            typing_string += " ";
+                        typing_string += wordlist[Math.floor(Math.random() * wordlist.length)].toLowerCase();
+                    }
+                    txt_obj.text = typing_string;
                     document.getElementById(txt_obj.div).innerText = txt_obj.text;
                 }
                 client.send();
@@ -30,25 +38,21 @@
             }
 
             function logKey(e) {
-                testText(e, left_txt);
-                testText(e, right_txt);
+                testText(e, left_txt, 'left');
+                testText(e, right_txt, 'right');
                 e.preventDefault();
             }
 
             window.onload = function(e) {
-                loadText(left_txt, "text1.txt");
-                loadText(right_txt, "text2.txt");
+                loadText(left_txt, "left.txt");
+                loadText(right_txt, "right.txt");
                 
                 document.addEventListener('keypress', logKey);
                 document.addEventListener('keydown', stopKeyProp)
 
-                webglstuff();
+                program_checking = setInterval(check_message, 1000);
             };
 
-            function webglstuff() {
-                var canvas = document.querySelector("#c");
-                
-            }
         </script>
     </head>
     <body>
@@ -70,8 +74,14 @@
             <div id="program">
                 <div id="inter">
                     <span id="curr_inter"></span>
-                    <div class="rate"><span class="curr_label">Left:</span><span id="left_count" class="count">0.00</span>lps </div>
-                    <div class="rate"><span class="curr_label">Right:</span><span id="right_count" class="count">0.00</span>lps </div>
+                    <div class="rate"><span class="curr_label">Left:</span><span id="left_count" class="count">0.0</span>lps 
+                    <span id="left_speed"></span>
+                    </div>
+                    <div class="rate"><span class="curr_label">Right:</span><span id="right_count" class="count">0.0</span>lps 
+                    <span id="right_speed"></span>
+                    </div>
+                    Curr number: <span id="curr_number"></span>
+                    Stack: <span id="stack"></span>
                 </div>
             </div>
         </div>

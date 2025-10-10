@@ -4,8 +4,8 @@ html,body {
     margin: 0;
     font-size: 14pt;
     width: 100%;
-    /* background-color: #aaffcc; */
-    /* background-color: #aaffcc; */
+    background-color: #000;
+    color: #75fb4c;
 }
 div {
     padding-bottom: 10px;
@@ -18,8 +18,8 @@ div {
     text-align: center;
     padding-top: 30px; 
     padding-bottom: 30px;
-    /* background-color: #000099; */
-    color: #200;
+    background-color: #000;
+    color: #75fb4c;
     min-height: 140px;
     font-family: 'Ubuntu Mono', 'Courier New', Courier, monospace;
 }
@@ -29,24 +29,26 @@ div {
     right: 0;
 }
 .fluxus {
-    background-color: black;
+    background-color: #000;
     color: #75fb4c;
-    padding-top: 30px; padding-bottom: 30px;
+    padding-top: 30px; 
+    padding-bottom: 30px;
     font-family: 'Ubuntu Mono', 'Courier New', Courier, monospace;
     text-align: center;
     width: 100%;
 }
+
 .fluxus div {
     text-align: left;
     display: inline-block;
-    /* for ie6/7: */
-    *display: inline;
     zoom: 1;
 }
+
 #lexicon {
     width: 100%;
     text-align: center;
 }
+
 #lexicon div {
     text-align: left;
     display: inline-block;
@@ -55,9 +57,11 @@ div {
     width: 85%;
     max-width: 1200px;
 }
+
 table, th, td {
-    border: #200 1px solid;
+    border: #75fb4c 1px solid;
     padding: 10px;
+    color: #75fb4c;
 }
 table {
     border-collapse: collapse;
@@ -66,6 +70,7 @@ td {
     line-height: 180%;
     vertical-align: top;
 }
+
 .andthen {
     padding-left: 40px;
 }
@@ -142,7 +147,7 @@ td {
     font-family: 'Ubuntu Mono', 'Courier New', Courier, monospace;
     margin-top: 10px;
     width: 200px;
-    padding-top: 30px;
+    padding-top: 10px;
     padding-bottom: 5px;
     padding-left: 10px;
     padding-right: 10px;
@@ -151,6 +156,8 @@ td {
 #preset_rheader {
     margin-left: auto;                
     padding-left: 20px;
+    text-align: right;
+    padding-right: 5px;
 }
 #preset_lheader {
     padding-left: 20px;
