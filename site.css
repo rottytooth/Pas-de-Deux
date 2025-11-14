@@ -1,11 +1,15 @@
-html,body {
+/* Global font family */
+html,body, .banner, .fluxus {
     font-family: 'Ubuntu Mono', 'Courier New', Courier, monospace;
+}
+
+html,body {
     padding: 0;
     margin: 0;
     font-size: 14pt;
     width: 100%;
     background-color: #000;
-    color: #75fb4c;
+    color: #ff69b4;
 }
 div {
     padding-bottom: 10px;
@@ -19,9 +23,8 @@ div {
     padding-top: 30px; 
     padding-bottom: 30px;
     background-color: #000;
-    color: #75fb4c;
+    color: #ff69b4;
     min-height: 140px;
-    font-family: 'Ubuntu Mono', 'Courier New', Courier, monospace;
 }
 #nics_div {
     position: absolute;
@@ -30,10 +33,9 @@ div {
 }
 .fluxus {
     background-color: #000;
-    color: #75fb4c;
+    color: #ff69b4;
     padding-top: 30px; 
     padding-bottom: 30px;
-    font-family: 'Ubuntu Mono', 'Courier New', Courier, monospace;
     text-align: center;
     width: 100%;
 }
@@ -59,9 +61,9 @@ div {
 }
 
 table, th, td {
-    border: #75fb4c 1px solid;
+    border: #ff69b4 1px solid;
     padding: 10px;
-    color: #75fb4c;
+    color: #ff69b4;
 }
 table {
     border-collapse: collapse;
@@ -99,20 +101,211 @@ td {
     IDE page
 */
 #code_section {
-    position:relative;
+    display: flex;
+    gap: 20px;
+    flex: 1;
+    margin-bottom: 20px;
+    min-height: 0;
+    position: relative;
 }
-#output_section {
-    position:relative;
-}
+
 .preset_text_container {
     width:49%;
-    height: 43vh;
     overflow-y: hidden;
     margin-left: 5px;
     float: left;
+
+    flex: 1;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #ff69b4;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
+
+.performance-section {
+    background: rgba(255, 105, 180, 0.1);
+    border-top: 1px solid rgba(255, 105, 180, 0.3);
+    padding: 15px;
+}
+
+.performance-section .rate {
+    margin: 0;
+    background: transparent;
+    border: none;
+    padding: 5px;
+}
+
+.preset_header {
+    background: linear-gradient(135deg, #ff69b4, #e91e63);
+    color: #000;
+    font-weight: bold;
+    padding: 5px 20px;
+    text-align: center;
+    font-size: 1.1em;
+    border-bottom: 2px solid #ff69b4;
+}
+
+.presetblocktop {
+    flex: 1;
+    background-color: #000;
+    padding: 20px;
+    overflow-y: auto;
+    border: none;
+}
+
 .preset_text {
-    overflow-y: scroll;
+    font-family: 'Ubuntu Mono', 'Courier New', monospace;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #ff69b4;
+    background: transparent;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.typed {
+    background-color: #ff69b4;
+    color: #000;
+    font-weight: bold;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+#program {
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid #ff69b4;
+    border-radius: 8px;
+    padding: 10px 20px;
+    box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+    margin-top: auto;
+    flex-shrink: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#inter {
+    padding: 0;
+}
+
+.rate {
+    display: block;
+    margin: 10px 0;
+    padding: 10px;
+    background: rgba(255, 105, 180, 0.1);
+    border-radius: 5px;
+    border: 1px solid rgba(255, 105, 180, 0.3);
+}
+
+.count {
+    background: linear-gradient(135deg, #ff69b4, #e91e63);
+    color: #000;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    margin: 0 0px;
+    display: inline-block;
+    min-width: 40px;
+    text-align: center;
+}
+
+#left_speed, #right_speed, #left_hold, #right_hold {
+    background: rgba(255, 105, 180, 0.2);
+    color: #ff69b4;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-style: italic;
+    border: 1px solid rgba(255, 105, 180, 0.5);
+    display: inline-block;
+    min-width: 80px;
+    text-align: center;
+    margin: 0 5px;
+}
+
+#curr_number, #stack {
+    background: linear-gradient(135deg, #ff69b4, #e91e63);
+    color: #000;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    margin: 0 10px;
+    display: inline-block;
+    min-width: 50px;
+    text-align: center;
+}
+
+.status-section {
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid #ff69b4;
+    border-radius: 8px;
+    padding: 8px 15px;
+    margin: 0;
+    box-shadow: 0 0 15px rgba(255, 105, 180, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.status-section h3 {
+    margin: 0;
+    color: #ff69b4;
+    font-size: 1em;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-label {
+    color: #ff69b4;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+#output_section {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #ff69b4;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+    min-height: 200px;
+}
+
+/* Remove old positioning styles */
+#preset_lblock, #preset_rblock {
+    display: none;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ff69b4;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #e91e63;
+}
+
+#output_section {
+    position:relative;
 }
 .presetblocktop {
     padding-right: 20px;
@@ -141,36 +334,19 @@ td {
     margin: 0;
     margin-top: -11px;
 }
-.preset_header {
-    background-color: #200;
-    color: #fff;
-    font-family: 'Ubuntu Mono', 'Courier New', Courier, monospace;
-    margin-top: 10px;
-    width: 200px;
-    padding-top: 10px;
-    padding-bottom: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
-    /* margin-bottom: -1px; */
-}
-#preset_rheader {
-    margin-left: auto;                
-    padding-left: 20px;
-    text-align: right;
-    padding-right: 5px;
-}
 #preset_lheader {
+    height: 0%;
     padding-left: 20px;
 }
 .presetblocktop {
     background-color: #200;
-    color: #75fb4c;
+    color: #ff69b4;
 }
 .typed {
     /* background-color: #999;
     color: #000; */
     color: #200;
-    background-color: #75fb4c;
+    background-color: #ff69b4;
 }
 .log {
     width: 20%;
@@ -178,22 +354,6 @@ td {
     overflow-y: scroll;
     height: 400px;
     display: inline-block;
-}
-#program {
-    width: 30%;
-    display: inline-block;
-}
-.curr_label {
-    width: 300px;
-}
-.rate {
-    display: inline-block;
-    width: 300px;
-}
-.count {
-    background-color: #200;
-    color: #fff;
-    padding: 3px;
 }
 #inter {
     padding-top: 30px;

@@ -4,12 +4,31 @@
         <link rel="stylesheet" href="site.css" type="text/css"/>
         <style type="text/css">
             body {
-                background-color: #fff;
-                color: #333;
+                background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+                color: #ff69b4;
                 overflow-y: hidden;
+                font-family: 'Ubuntu Mono', 'Courier New', monospace;
+                margin: 0;
+                padding: 20px;
+                height: 100vh;
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+                animation: breathe 4s ease-in-out infinite;
+            }
+            
+            @keyframes breathe {
+                0%, 100% {
+                    filter: brightness(1);
+                }
+                50% {
+                    filter: brightness(1.4);
+                }
             }
         </style>
-        <script src="src/soundGenerators.js"></script>        
+        <script src="src/pulse_engine.js"></script>
+        <script src="src/sound_generators.js"></script>
+        <script src="src/rhythms.js"></script>
         <script src="src/pas_de_deux.js"></script>        
         <script type="text/javascript">
 
@@ -43,12 +62,24 @@
                 e.preventDefault();
             }
 
+            function logKeyDown(e) {
+                handleKeyDown(e, left_txt, 'left');
+                handleKeyDown(e, right_txt, 'right');
+            }
+
+            function logKeyUp(e) {
+                handleKeyUp(e, left_txt, 'left');
+                handleKeyUp(e, right_txt, 'right');
+            }
+
             window.onload = function(e) {
                 loadText(left_txt, "left.txt");
                 loadText(right_txt, "right.txt");
                 
                 document.addEventListener('keypress', logKey);
-                document.addEventListener('keydown', stopKeyProp)
+                document.addEventListener('keydown', stopKeyProp);
+                document.addEventListener('keydown', logKeyDown);
+                document.addEventListener('keyup', logKeyUp);
 
                 program_checking = setInterval(check_message, 1000);
             };
@@ -58,39 +89,56 @@
     <body>
         <div id="code_section">
             <div class="preset_text_container">
-                <div id="preset_lheader" class="preset_header">Left text</div>
+                <div id="preset_lheader" class="preset_header"></div>
                 <div class="presetblocktop">
                     <div id="preset_lblock"></div>
                     <div id="preset_text1" class="preset_text"></div>
                 </div>
+                <div class="performance-section">
+                    <div class="rate"><!---->
+                        <span id="left_count" class="count">0.0</span>
+                        <span style="color: #ff69b4;">lps</span>
+                        <span id="left_speed"></span>
+                        <span id="left_hold"></span>
+                    </div>
+                </div>
             </div>
             <div class="preset_text_container">
-                <div id="preset_rheader" class="preset_header">Right text</div>
+                <div id="preset_lheader" class="preset_header"></div>
                 <div class="presetblocktop">
                     <div id="preset_rblock"></div>
                     <div id="preset_text2" class="preset_text"></div>
                 </div>
-            </div>
-            <div id="program">
-                <div id="inter">
-                    <span id="curr_inter"></span>
-                    <div class="rate"><span class="curr_label">Left:</span><span id="left_count" class="count">0.0</span>lps 
-                    <span id="left_speed"></span>
+                <div class="performance-section">
+                    <div class="rate"><!-- Right -->
+                        <span id="right_count" class="count">0.0</span>
+                        <span style="color: #ff69b4;">lps</span>
+                        <span id="right_speed"></span>
+                        <span id="right_hold"></span>
                     </div>
-                    <div class="rate"><span class="curr_label">Right:</span><span id="right_count" class="count">0.0</span>lps 
-                    <span id="right_speed"></span>
-                    </div>
-                    Curr number: <span id="curr_number"></span>
-                    Stack: <span id="stack"></span>
                 </div>
             </div>
         </div>
-        <div id="output_section"><canvas id="c"></canvas></div>
-        <!-- For debugging: -->
-        <!-- <div id="log_container">
-            <div id="log1" class="log"></div>
-            <div id="log2" class="log"></div>
-        </div> -->
+        <div id="program">
+            <div id="inter">
+                <div class="status-section">
+                    <h3>🎵 Program State</h3>
+                    
+                    <div class="status-item">
+                        <span class="status-label">Current Number:</span>
+                        <span id="curr_number">0</span>
+                    </div>
+                    
+                    <div class="status-item">
+                        <span class="status-label">Stack:</span>
+                        <span id="stack">[]</span>
+                    </div>
+                </div>
+                
+                <span id="curr_inter"></span>
+            </div>
+        </div>
+        </div>
     </body>
 </html>
 

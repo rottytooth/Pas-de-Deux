@@ -1,3 +1,13 @@
+/**
+ * Sound Generator Module
+ * Provides industrial sound generation for the typing interface
+ * 
+ * Exports:
+ *   soundGenerator.sounds - Array of available sound configurations
+ *   soundGenerator.playSound(config) - Play a sound from the configuration
+ *   soundGenerator.stopAllSounds() - Stop all currently playing sounds
+ */
+
 let audioContext;
 let masterGain;
 let oscillators = [];
@@ -7,6 +17,7 @@ function initAudio() {
     if (!audioContext) {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
         masterGain = audioContext.createGain();
+        masterGain.gain.value = 0.4; // Set master volume to 40% (quieter)
         masterGain.connect(audioContext.destination);
     }
 }
@@ -711,3 +722,10 @@ const sounds = [
     { name: 'Crickets', type: 'crickets', freq: 4500, attack: 0.003 },
     { name: 'Distant Voice', type: 'voice', freq: 140, attack: 0.3}
 ];
+
+// Export as a soundGenerator object
+const soundGenerator = {
+    sounds: sounds,
+    playSound: playSound,
+    stopAllSounds: stopAllSounds
+};
