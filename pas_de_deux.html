@@ -4,26 +4,15 @@
         <link rel="stylesheet" href="site.css" type="text/css"/>
         <style type="text/css">
             body {
-                background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
-                color: #ff69b4;
+                background: #1e1e1e;
+                color: #cccccc;
                 overflow-y: hidden;
-                font-family: 'Ubuntu Mono', 'Courier New', monospace;
                 margin: 0;
-                padding: 20px;
+                padding: 12px;
                 height: 100vh;
                 box-sizing: border-box;
                 display: flex;
                 flex-direction: column;
-                animation: breathe 4s ease-in-out infinite;
-            }
-            
-            @keyframes breathe {
-                0%, 100% {
-                    filter: brightness(1);
-                }
-                50% {
-                    filter: brightness(1.4);
-                }
             }
         </style>
         <script src="src/pulse_engine.js"></script>
@@ -89,7 +78,7 @@
     <body>
         <div id="code_section">
             <div class="preset_text_container">
-                <div id="preset_lheader" class="preset_header"></div>
+                <div id="preset_lheader" class="preset_header"><span class="tab">left.pdd</span></div>
                 <div class="presetblocktop">
                     <div id="preset_lblock"></div>
                     <div id="preset_text1" class="preset_text"></div>
@@ -97,14 +86,14 @@
                 <div class="performance-section">
                     <div class="rate"><!---->
                         <span id="left_count" class="count">0.0</span>
-                        <span style="color: #ff69b4;">lps</span>
+                        <span style="color: #858585;">lps</span>
                         <span id="left_speed"></span>
                         <span id="left_hold"></span>
                     </div>
                 </div>
             </div>
             <div class="preset_text_container">
-                <div id="preset_lheader" class="preset_header"></div>
+                <div id="preset_rheader" class="preset_header"><span class="tab">right.pdd</span></div>
                 <div class="presetblocktop">
                     <div id="preset_rblock"></div>
                     <div id="preset_text2" class="preset_text"></div>
@@ -112,7 +101,7 @@
                 <div class="performance-section">
                     <div class="rate"><!-- Right -->
                         <span id="right_count" class="count">0.0</span>
-                        <span style="color: #ff69b4;">lps</span>
+                        <span style="color: #858585;">lps</span>
                         <span id="right_speed"></span>
                         <span id="right_hold"></span>
                     </div>
@@ -122,7 +111,7 @@
         <div id="program">
             <div id="inter">
                 <div class="status-section">
-                    <h3>🎵 Program State</h3>
+                    <h3>Program State</h3>
                     
                     <div class="status-item">
                         <span class="status-label">Current Number:</span>
