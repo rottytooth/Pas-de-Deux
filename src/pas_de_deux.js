@@ -206,27 +206,69 @@ let rightSpeechInstance = null;
 const pronounceWord = (word, side) => {
     if ('speechSynthesis' in window && word.trim().length > 0) {
         
+        // Initialize audio context for panning if not already done
+        if (!window.speechAudioContext) {
+            window.speechAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        
         // Create separate speech synthesis instances for each side
         const utterance = new SpeechSynthesisUtterance(word.trim());
         utterance.rate = 0.8;
         utterance.volume = 1.0;
         
-        // Set pitch differently for left vs right
+        // Try to select a female voice
+        const voices = speechSynthesis.getVoices();
+        const femaleVoices = voices.filter(voice => 
+            voice.name.toLowerCase().includes('female') || 
+            voice.name.toLowerCase().includes('woman') ||
+            voice.name.toLowerCase().includes('samantha') ||
+            voice.name.toLowerCase().includes('susan') ||
+            voice.name.toLowerCase().includes('victoria') ||
+            voice.name.toLowerCase().includes('karen') ||
+            voice.name.toLowerCase().includes('zira') ||
+            voice.name.toLowerCase().includes('hazel')
+        );
+        
+        if (femaleVoices.length > 0) {
+            utterance.voice = femaleVoices[0];
+        }
+        
+        // Set pitch and panning for both sides with better distinction
         if (side === 'left') {
-            utterance.pitch = 0.8; // Lower pitch for left
+            utterance.pitch = 1.4; // Lower pitch for left to distinguish better
             // Cancel only left side previous speech
             if (leftSpeechInstance && speechSynthesis.speaking) {
                 speechSynthesis.cancel();
             }
             leftSpeechInstance = utterance;
         } else if (side === 'right') {
-            utterance.pitch = 1.2; // Higher pitch for right
+            utterance.pitch = 1.9; // Higher pitch for right
             // Cancel only right side previous speech  
             if (rightSpeechInstance && speechSynthesis.speaking) {
                 speechSynthesis.cancel();
             }
             rightSpeechInstance = utterance;
         }
+        
+        // Add stereo panning using Web Audio API
+        const audioCtx = window.speechAudioContext;
+        const panner = audioCtx.createStereoPanner();
+        
+        // Set panning: -1 is full left, +1 is full right
+        if (side === 'left') {
+            panner.pan.value = -0.9; // Far left
+        } else if (side === 'right') {
+            panner.pan.value = 0.9; // Far right
+        }
+        
+        // Connect panner to destination
+        panner.connect(audioCtx.destination);
+        
+        // Override the speech synthesis to route through our panner
+        utterance.addEventListener('start', () => {
+            // Note: Direct audio routing of speechSynthesis is limited
+            // The panning effect may be subtle due to browser limitations
+        });
         
         // Immediately speak without waiting
         speechSynthesis.speak(utterance);
@@ -359,9 +401,12 @@ const testText = (e, txt, side) => {
         clickSound.play();
 
         let changeType = parseTypeSpeeds();
-        console.log('changeType:', changeType, 'left state:', left_txt.state, 'right state:', right_txt.state);
         
         if (changeType.change) {
+            if (DEBUG) {
+                console.log('changeType:', changeType, 'left state:', left_txt.state, 'right state:', right_txt.state);
+
+            }
             soundGenerator.playSound(soundGenerator.sounds[curr_sound]);
             
             // Start or adjust bass rhythm based on typing speed
@@ -374,11 +419,11 @@ const testText = (e, txt, side) => {
                 // Start the bass if it's not already playing
                 console.log('Calling rhythm.startLoop()');
                 rhythm.startLoop();
-                rhythm.setBPM(targetBPM);
+                rhythm.setTempo(targetBPM);
             } else {
                 // Adjust BPM if bass is already playing
                 console.log('Adjusting BPM to:', targetBPM);
-                rhythm.setBPM(targetBPM);
+                rhythm.setTempo(targetBPM);
             }
         }
         

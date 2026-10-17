@@ -12,6 +12,7 @@ let audioContext;
 let masterGain;
 let oscillators = [];
 let playing = null;
+let lastPlayedSound = null; // Track the last played sound for debug logging
 
 function initAudio() {
     if (!audioContext) {
@@ -20,6 +21,24 @@ function initAudio() {
         masterGain.gain.value = 0.4; // Set master volume to 40% (quieter)
         masterGain.connect(audioContext.destination);
     }
+}
+
+function createReverb(duration = 2, decay = 3) {
+    const rate = audioContext.sampleRate;
+    const length = rate * duration;
+    const impulse = audioContext.createBuffer(2, length, rate);
+    const left = impulse.getChannelData(0);
+    const right = impulse.getChannelData(1);
+    
+    for (let i = 0; i < length; i++) {
+        const n = length - i;
+        left[i] = (Math.random() * 2 - 1) * Math.pow(n / length, decay);
+        right[i] = (Math.random() * 2 - 1) * Math.pow(n / length, decay);
+    }
+    
+    const convolver = audioContext.createConvolver();
+    convolver.buffer = impulse;
+    return convolver;
 }
 
 function createNoise(type, duration = 3) {
@@ -58,7 +77,7 @@ function createNoise(type, duration = 3) {
 }
 
 // Sound generation methods grouped together
-const soundGenerators = {
+const synths = {
     rumble: (ctx, now, variedFreq, pitchVariation, config) => {
         const variant = Math.random();
         let chosenFreq, chosenAttack;
@@ -139,112 +158,97 @@ const soundGenerators = {
 
     impact: (ctx, now, variedFreq, pitchVariation, config) => {
         const nodes = [];
-        const impactFreq = variedFreq + Math.random() * 600 - 300;
         
-        const noise = ctx.createBufferSource();
-        noise.buffer = createNoise('brown');
-        
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(impactFreq, now);
-        filter.frequency.exponentialRampToValueAtTime(40, now + 0.8);
-        
-        const gain = ctx.createGain();
-        gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(0.9, now + 0.005);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
-        
-        noise.connect(filter);
-        filter.connect(gain);
-        gain.connect(masterGain);
-        noise.start(now);
-        noise.stop(now + 0.8);
-        nodes.push(noise);
-        
-        for (let i = 0; i < 8; i++) {
-            const scrapNoise = ctx.createBufferSource();
-            scrapNoise.buffer = createNoise('white');
+        // Create bell-like tones with harmonic series
+        const harmonics = [1, 2.4, 3.8, 5.2, 7.1];
+        harmonics.forEach((ratio, i) => {
+            const osc = ctx.createOscillator();
+            osc.frequency.value = variedFreq * ratio;
+            osc.type = 'sine';
             
-            const scrapFilter = ctx.createBiquadFilter();
-            scrapFilter.type = 'bandpass';
-            scrapFilter.frequency.value = 200 + Math.random() * 600;
-            scrapFilter.Q.value = 15 + Math.random() * 10;
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(0, now);
+            gain.gain.linearRampToValueAtTime(0.3 / (i + 1), now + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 3 + i * 0.5);
             
-            const scrapGain = ctx.createGain();
-            const startTime = now + 0.05 + Math.random() * 0.3;
-            scrapGain.gain.setValueAtTime(0, startTime);
-            scrapGain.gain.linearRampToValueAtTime(0.25, startTime + 0.01);
-            scrapGain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.3 + Math.random() * 0.4);
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.value = variedFreq * ratio;
+            filter.Q.value = 20;
             
-            scrapNoise.connect(scrapFilter);
-            scrapFilter.connect(scrapGain);
-            scrapGain.connect(masterGain);
-            scrapNoise.start(startTime);
-            scrapNoise.stop(startTime + 1);
-            nodes.push(scrapNoise);
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(masterGain);
+            
+            osc.start(now);
+            try { osc.stop(now + 5); } catch(e) {}
+            nodes.push(osc);
+        });
+        
+        // Add reverb
+        const reverb = createReverb(3, 4);
+        const reverbGain = ctx.createGain();
+        reverbGain.gain.value = 0.6;
+        
+        if (nodes[0]) {
+            nodes[0].connect(reverb);
+            reverb.connect(reverbGain);
+            reverbGain.connect(masterGain);
         }
         
         return nodes;
     },
 
-    chaos: (ctx, now, variedFreq, pitchVariation, config) => {
+  chaos: (ctx, now, variedFreq, pitchVariation, config) => {
         const nodes = [];
-        
-        for (let i = 0; i < 12; i++) {
-            const noise = ctx.createBufferSource();
-            noise.buffer = createNoise('white');
+
+        // Create evolving cloud of tones
+        for (let i = 0; i < 10; i++) {
+            const osc = ctx.createOscillator();
+            const startFreq = variedFreq * (0.5 + Math.random() * 2);
+            osc.frequency.setValueAtTime(startFreq, now);
+            osc.frequency.exponentialRampToValueAtTime(startFreq * (0.7 + Math.random() * 0.6), now + 5);
+            osc.type = ['sine', 'triangle', 'square'][Math.floor(Math.random() * 3)];
             
             const filter = ctx.createBiquadFilter();
             filter.type = 'bandpass';
-            filter.frequency.value = variedFreq + Math.random() * 800 - 400;
-            filter.Q.value = 10 + Math.random() * 20;
+            filter.frequency.value = startFreq;
+            filter.Q.value = 15 + Math.random() * 10;
+            
+            const lfo = ctx.createOscillator();
+            lfo.frequency.value = 0.1 + Math.random() * 0.5;
+            const lfoGain = ctx.createGain();
+            lfoGain.gain.value = startFreq * 0.1;
+            lfo.connect(lfoGain);
+            lfoGain.connect(osc.frequency);
             
             const gain = ctx.createGain();
-            const startTime = now + Math.random() * 0.4;
+            const startTime = now + Math.random() * 0.5;
             gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.3, startTime + 0.01);
-            gain.gain.setValueAtTime(0.3, startTime + 0.8);
-            gain.gain.linearRampToValueAtTime(0.5, startTime + 1.5);
-            gain.gain.exponentialRampToValueAtTime(0.001, startTime + 2);
-            
-            noise.connect(filter);
-            filter.connect(gain);
-            gain.connect(masterGain);
-            noise.start(startTime);
-            noise.stop(startTime + 2);
-            nodes.push(noise);
-        }
-        
-        for (let i = 0; i < 15; i++) {
-            const osc = ctx.createOscillator();
-            osc.frequency.value = 40 * pitchVariation * (1 + Math.random() * 3);
-            osc.type = Math.random() > 0.5 ? 'sawtooth' : 'square';
-            
-            const noise = ctx.createBufferSource();
-            noise.buffer = createNoise(Math.random() > 0.5 ? 'white' : 'pink');
-            
-            const filter = ctx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.value = 100 + Math.random() * 500;
-            filter.Q.value = 20;
-            
-            const gain = ctx.createGain();
-            const startTime = now + 0.8 + Math.random() * 0.6;
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.12, startTime + 0.3);
-            gain.gain.exponentialRampToValueAtTime(0.001, startTime + 1.5 + Math.random() * 2);
+            gain.gain.linearRampToValueAtTime(0.15, startTime + 0.3);
+            gain.gain.setValueAtTime(0.15, startTime + 4);
+            gain.gain.exponentialRampToValueAtTime(0.001, startTime + 7);
             
             osc.connect(filter);
-            noise.connect(filter);
             filter.connect(gain);
             gain.connect(masterGain);
             
             osc.start(startTime);
-            noise.start(startTime);
-            osc.stop(startTime + 3.5);
-            noise.stop(startTime + 3.5);
-            
-            nodes.push(osc, noise);
+            lfo.start(startTime);
+            try { osc.stop(startTime + 7); } catch(e) {}
+            try { lfo.stop(startTime + 7); } catch(e) {}
+            nodes.push(osc, lfo);
+        }
+        
+        // Add atmospheric reverb
+        const reverb = createReverb(4, 5);
+        const reverbGain = ctx.createGain();
+        reverbGain.gain.value = 0.7;
+        
+        if (nodes[0]) {
+            nodes[0].connect(reverb);
+            reverb.connect(reverbGain);
+            reverbGain.connect(masterGain);
         }
         
         return nodes;
@@ -698,10 +702,16 @@ function playSound(config) {
     const pitchVariation = 1 + (Math.random() * 0.3 - 0.15);
     const variedFreq = config.freq * pitchVariation;
     
+    // Debug logging only when switching to a different sound
+    if (typeof DEBUG !== 'undefined' && DEBUG === true && lastPlayedSound !== config.name) {
+        console.log('Switching to sound:', config.name);
+        lastPlayedSound = config.name;
+    }
+    
     playing = config.name;
 
     // Call the appropriate sound generator
-    const generator = soundGenerators[config.type];
+    const generator = synths[config.type];
     if (generator) {
         const nodes = generator(audioContext, now, variedFreq, pitchVariation, config);
         oscillators.push(...nodes);
@@ -709,11 +719,14 @@ function playSound(config) {
 }
 
 const sounds = [
+    { name: 'Resonant Bell', type: 'impact', freq: 225, attack: 0.01 },
+    { name: 'Spectral Cloud', type: 'chaos', freq: 180, attack: 0.3 },
     { name: 'Subsonic Pulse', type: 'rumble', freq: 28, attack: 0.6},
     { name: 'Earthquake', type: 'earthquake', freq: 25, attack: 0.8 },
     { name: 'Chaos Destroyer', type: 'chaos', freq: 180, attack: 0.01 },
     { name: 'Heavy Grind', type: 'grind', freq: 80, attack: 0.3 },
     { name: 'Impact', type: 'impact', freq: 225, attack: 0.005 },
+
     { name: 'Distorted Bass', type: 'distorted', freq: 55, attack: 0.2 },
     { name: 'Low Distortion', type: 'distorted', freq: 30, attack: 0.3 },
     { name: 'Grinding Chaos', type: 'grind', freq: 120, attack: 0.15 },

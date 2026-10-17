@@ -14,7 +14,7 @@ const rhythm = (function() {
     let isPlaying = false;
     let schedulerIntervalId = null;
     let nextNoteTime = 0;
-    let currentBPM = 120;
+    let currentTempo = 120;
     let currentPreset = 'classic';
     let volumeMultiplier = 1.0; // For fading out
     let isFading = false;
@@ -114,17 +114,17 @@ const rhythm = (function() {
         "tempo": 130,
         "patterns": {
             "bass": {
-                "notes": ["c2", "_", "c2", "_", "g2", "_", "c2", "_"],
+                "notes": ["c2", "_"],
                 "repeat": 2,
                 "wave": "square"
             },
             "melody": {
-                "notes": ["c4", "e4", "g4", "e4", "f4", "d4"],
+                "notes": ["c4"],
                 "repeat": 2,
                 "wave": "sawtooth"
             },
             "lead": {
-                "notes": ["g5", "a5", "c6", "g5", "e5", "_", "_", "_"],
+                "notes": ["g5"],
                 "repeat": 1,
                 "wave": "triangle"
             }
@@ -225,7 +225,7 @@ const rhythm = (function() {
             playBassThump(nextNoteTime);
             
             // Calculate next note time based on CURRENT BPM
-            const secondsPerBeat = 60.0 / currentBPM;
+            const secondsPerBeat = 60.0 / currentTempo;
             nextNoteTime += secondsPerBeat;
         }
     }
@@ -254,10 +254,15 @@ const rhythm = (function() {
         schedulerIntervalId = setInterval(scheduler, 25);
         console.log('Bass started successfully with preset:', currentPreset);
 
+        // Parse and update the preset with current BPM
+        const presetObj = JSON.parse(presetJson);
+        presetObj.tempo = currentTempo;
+        const updatedPresetJson = JSON.stringify(presetObj);
+        
         if (!pEngine.getIsPlaying()) {
-            pEngine.play(presetJson);
+            pEngine.play(updatedPresetJson);
         } else {
-            pEngine.updateFromCode(presetJson);
+            pEngine.updateFromCode(updatedPresetJson);
         }
     }
 
@@ -274,8 +279,8 @@ const rhythm = (function() {
     }
 
     // Set the BPM
-    function setBPM(bpm) {
-        currentBPM = bpm;
+    function setTempo(bpm) {
+        currentTempo = bpm;
     }
 
     // Check if bass is playing (returns false if fading out)
@@ -296,7 +301,7 @@ const rhythm = (function() {
     return {
         startLoop: startLoop,
         stopBass: stopBass,
-        setBPM: setBPM,
+        setTempo: setTempo,
         isPlaying: isBassPlaying,
         nextPreset: nextPreset
     };
